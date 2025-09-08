@@ -1,0 +1,251 @@
+@extends('layouts.master')
+
+@section('title')
+    Handyman Earnings
+@endsection
+
+@php
+    $userwelcomedata = Auth::guard('admin')->user();
+@endphp
+
+@section('page-title')
+    Welcome, {{ $userwelcomedata->firstname }} {{ $userwelcomedata->lastname }}
+@endsection
+
+@section('css')
+    <style>
+        .list-inline-item {
+            margin-right: -0.5rem !important;
+        }
+    </style>
+@endsection
+
+<style>
+    .table-light {
+
+        --bs-table-bg: #246FC1 !important;
+
+    }
+</style>
+
+@section('body')
+@endsection
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+@section('content')
+
+    {{-- Heading detail --}}
+    <div class="row align-items-center">
+        <div class="col-md-3" style="padding-top: 18px;">
+            <div class="mb-3">
+                <h5 class="card-title">Handyman Earnings <span
+                        class="text-muted fw-normal ms-2">({{ $records->total() }})</span>
+                </h5>
+                <p class="text-muted">Handyman / Handyman Earnings</p>
+            </div>
+        </div>
+    </div>
+
+
+    {{-- Category List Table --}}
+    <div class="row" style="padding-top: 20px;">
+
+        @if (session('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
+            </div>
+        @endif
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-nowrap align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="min-width: 16rem; color: #ffff;">Handyman</th>
+                                    <th scope="col" style="color: #ffff;">Booking</th>
+                                    <th scope="col" style="color: #ffff;">Commission</th>
+                                    <th scope="col" style="color: #ffff;">Total Earning</th>
+                                    <th scope="col" style="color: #ffff;">Provider Paid Amount</th>
+                                    <th scope="col" style="color: #ffff;">Pending Amount</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if ($records->isEmpty())
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div
+                                                style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;">
+                                                <div
+                                                    style="background: linear-gradient(135deg, #246FC1, #1E5A97); padding: 0.8rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+                                                    <i class="bx bx-dollar-circle" style="font-size: 2.5rem; color: #fff;"></i>
+                                                </div>
+                                                <p
+                                                    style="margin-top: 0.6rem; font-size: 1.1rem; font-weight: 500; color: #444;">
+                                                    No Handyman Earnings Found</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @else
+                                    @foreach ($records as $user)
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center;">
+                                                    <div>
+                                                        {{-- Handyman Image --}}
+                                                        @if ($user->handyman && $user->handyman->profile_pic)
+                                                            <img src="{{ asset('images/user/' . $user->handyman->profile_pic) }}"
+                                                                class="avatar rounded-circle img-thumbnail me-2">
+                                                        @else
+                                                            {{-- Default User Image --}}
+                                                            <img src="{{ asset('images/user/default_handyman.jpg') }}"
+                                                                class="avatar rounded-circle img-thumbnail me-2">
+                                                        @endif
+                                                    </div>
+
+                                                    <div style="display: flex; flex-direction: column; width: fit-content;">
+                                                        {{-- User Full Name with Highlight --}}
+                                                        @php
+                                                            $fullName =
+                                                                $user->handyman->firstname .
+                                                                ' ' .
+                                                                $user->handyman->lastname;
+                                                            $highlightedName = $search
+                                                                ? preg_replace(
+                                                                    '/(' . preg_quote($search, '/') . ')/i',
+                                                                    '<mark>$1</mark>',
+                                                                    $fullName,
+                                                                )
+                                                                : '<span style="color: #246FC1;">' .
+                                                                    $fullName .
+                                                                    '</span>';
+                                                        @endphp
+
+                                                        <a href="{{ route('providerhandyman-view', $user->handyman_id) }}"
+                                                            class="text-body text-decoration-none">
+                                                            <div class="d-flex align-items-center">
+                                                                <span class="text-body"
+                                                                    style="color: #246FC1;">{!! $highlightedName !!}</span>
+
+                                                                {{-- Star Rating beside Name --}}
+                                                                <span class="ms-1 d-flex align-items-center"
+                                                                    style="color: #000000;">
+                                                                    <i class="bx bxs-star font-size-14 text-warning"></i>
+                                                                    <span
+                                                                        class="font-size-14">{{ $user->handyman->avg_handyman_review ?? '0' }}</span>
+                                                                </span>
+                                                            </div>
+                                                        </a>
+
+                                                        {{-- Email Below Name --}}
+                                                        <small class="text-muted">{{ $user->handyman->email ?? '' }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+
+                                            <td class="{{ $user->total_bookings ? 'text-primary' : 'text-muted' }}">
+                                                {{ $user->total_bookings ?? '' }}
+                                            </td>
+
+                                            <td class="{{ $user->commision_persontage ? 'text-success' : 'text-danger' }}">
+                                                {{ $user->commision_persontage ?? '' }}%
+                                            </td>
+
+                                            <td class="{{ $user->total_earning > 0 ? 'text-success' : 'text-danger' }}">
+                                                {{ $user->total_earning > 0 ? $defaultCurrency . $user->total_earning : $defaultCurrency . '0' }}
+                                            </td>
+
+                                            <td
+                                                class="{{ $user->provider_paid_amount > 0 ? 'text-success' : 'text-danger' }}">
+                                                {{ $user->provider_paid_amount > 0 ? $defaultCurrency . $user->provider_paid_amount : $defaultCurrency . '0' }}
+                                            </td>
+
+                                            <td class="{{ $user->pending_amount > 0 ? 'text-primary' : 'text-danger' }}">
+                                                {{ $user->pending_amount > 0 ? $defaultCurrency . $user->pending_amount : $defaultCurrency . '0' }}
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {{-- Pagination --}}
+    <div class="row">
+        <div class="col-md-12" style="padding-top: 17px;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="entries-info">
+                    Showing {{ $records->firstItem() }} to {{ $records->lastItem() }} of
+                    {{ $records->total() }} entries
+                </div>
+                <div class="pagination-container">
+                    @if ($records->hasPages())
+                        <nav>
+                            <ul class="pagination">
+                                {{-- Previous Page Link --}}
+                                @if ($records->onFirstPage())
+                                    <li class="page-item disabled" aria-disabled="true">
+                                        <span class="page-link">&laquo;</span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $records->previousPageUrl() }}"
+                                            rel="prev">&laquo;</a>
+                                    </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @foreach (range(1, $records->lastPage()) as $page)
+                                    @if ($page == 1 || $page == $records->lastPage() || abs($page - $records->currentPage()) <= 2)
+                                        @if ($page == $records->currentPage())
+                                            <li class="page-item active" aria-current="page">
+                                                <span class="page-link">{{ $page }}</span>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                    href="{{ $records->url($page) }}">{{ $page }}</a>
+                                            </li>
+                                        @endif
+                                    @elseif ($page == 2 || $page == $records->lastPage() - 1)
+                                        {{-- Skip showing ellipsis for the second page and second last page --}}
+                                        <li class="page-item disabled" aria-disabled="true">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($records->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $records->nextPageUrl() }}"
+                                            rel="next">&raquo;</a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled" aria-disabled="true">
+                                        <span class="page-link">&raquo;</span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+
+@section('scripts')
+    <script src="{{ URL::asset('build/js/app.js') }}"></script>
+@endsection

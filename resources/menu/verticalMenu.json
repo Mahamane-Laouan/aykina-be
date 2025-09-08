@@ -1,0 +1,105 @@
+{
+  "menu": [
+    {
+      "name": "Dashboards",
+      "url": "dashboard",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard"
+    },
+    {
+      "menuHeader": "User"
+    },
+    {
+      "name": "Provider",
+      "icon": "menu-icon tf-icons bx bx-user-plus",
+      "slug": "providers-list",
+      "submenu": [
+        {
+          "url": "providers-list",
+          "name": "Provider List",
+          "slug": "providers-list"
+        },
+        {
+          "url": "providers-requestlist",
+          "name": "Provider Request List",
+          "slug": "providers-requestlist"
+        }
+      ]
+    },
+    {
+      "name": "Handyman",
+      "icon": "menu-icon tf-icons bx bx-user-plus",
+      "url": "handyman-list",
+      "slug": "handyman-list"
+    },
+    {
+      "name": "All Users List",
+      "icon": "menu-icon tf-icons bx bx-user",
+      "url": "users-list",
+      "slug": "users-list"
+    },
+    {
+      "menuHeader": "Service"
+    },
+    {
+      "name": "Category",
+      "icon": "menu-icon tf-icons bx bx-aperture",
+      "url": "categories-list",
+      "slug": "categories-list"
+    },
+    {
+      "name": "Sub Category",
+      "icon": "menu-icon tf-icons bx bx-cube",
+      "url": "subcategories-list",
+      "slug": "subcategories-list"
+    },
+    {
+      "name": "Services",
+      "icon": "menu-icon tf-icons bx bx-customize",
+      "url": "services-list",
+      "slug": "services-list"
+    },
+    {
+      "menuHeader": "Product"
+    },
+    {
+      "name": "Products",
+      "icon": "menu-icon tf-icons bx bx-cart-alt",
+      "url": "products-list",
+      "slug": "products-list"
+    },
+    {
+      "menuHeader": "Promotion"
+    },
+    {
+      "name": "Coupon",
+      "icon": "menu-icon tf-icons bx bxs-coupon",
+      "url": "coupons-list",
+      "slug": "coupons-list"
+    },
+    {
+      "name": "Slider",
+      "icon": "menu-icon tf-icons bx bx-slider",
+      "url": "sliders-list",
+      "slug": "sliders-list"
+    },
+    {
+      "menuHeader": "Booking"
+    },
+    {
+      "name": "Booking",
+      "icon": "menu-icon tf-icons bx bxs-calendar-check",
+      "url": "booking-history",
+      "slug": "booking-history"
+    },
+    {
+      "menuHeader": "System"
+    },
+    {
+      "name": "Tax",
+      "icon": "menu-icon tf-icons bx bx-dollar",
+      "url": "taxrate-list",
+      "slug": "taxrate-list"
+    }
+  ]
+}

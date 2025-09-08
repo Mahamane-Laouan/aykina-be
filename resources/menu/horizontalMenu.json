@@ -1,0 +1,130 @@
+{
+  "menu": [
+    {
+      "name": "Dashboards",
+      "url": "dashboard",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard"
+    },
+    {
+      "name": "Users",
+      "icon": "menu-icon tf-icons bx bx-user",
+      "url": "app/user/list",
+      "slug": "app-user-list"
+    },
+    {
+      "name": "Vendor",
+      "icon": "menu-icon tf-icons bx bx-user-plus",
+      "slug": "vendors-list",
+      "submenu": [
+        {
+          "url": "vendors-add",
+          "name": "Add Vendor",
+          "slug": "vendors-add"
+        },
+        {
+          "url": "vendors-list",
+          "name": "Vendor List",
+          "slug": "vendors-list"
+        }
+      ]
+    },
+    {
+      "name": "Category",
+      "icon": "menu-icon tf-icons bx bx-aperture",
+      "slug": "categories-list",
+      "submenu": [
+        {
+          "url": "categories-add",
+          "name": "Add Category",
+          "slug": "categories-add"
+        },
+        {
+          "url": "categories-list",
+          "name": "Category List",
+          "slug": "categories-list"
+        }
+      ]
+    },
+    {
+      "name": "Banners",
+      "icon": "menu-icon tf-icons bx bx-save",
+      "slug": "banners-list",
+      "submenu": [
+        {
+          "url": "banners-add",
+          "name": "Add Banners",
+          "slug": "banners-add"
+        },
+        {
+          "url": "banners-list",
+          "name": "Banners List",
+          "slug": "banners-list"
+        }
+      ]
+    },
+    {
+      "name": "Services",
+      "icon": "menu-icon tf-icons bx bx-customize",
+      "slug": "services-list",
+      "submenu": [
+        {
+          "url": "services-add",
+          "name": "Add Service",
+          "slug": "services-add"
+        },
+        {
+          "url": "services-list",
+          "name": "Service List",
+          "slug": "services-list"
+        }
+      ]
+    },
+    {
+      "name": "Booking History",
+      "icon": "menu-icon tf-icons bx bx-history",
+      "url": "booking-history",
+      "slug": "booking-history"
+    },
+    {
+      "name": "Reviews",
+      "icon": "menu-icon tf-icons bx bx-star",
+      "url": "reviews-list",
+      "slug": "reviews-list"
+    },
+    {
+      "name": "Notifications",
+      "icon": "menu-icon tf-icons bx bx-bell",
+      "slug": "notifications-list",
+      "submenu": [
+        {
+          "url": "notifications-add",
+          "name": "Push Notification",
+          "slug": "notifications-add"
+        },
+        {
+          "url": "notifications-list",
+          "name": "View Notification",
+          "slug": "notifications-list"
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "icon": "menu-icon tf-icons bx bx-cog",
+      "slug": "payments",
+      "submenu": [
+        {
+          "url": "payments",
+          "name": "Payment",
+          "slug": "payments"
+        },
+        {
+          "url": "firebase",
+          "name": "Firebase",
+          "slug": "firebase"
+        }
+      ]
+    }
+  ]
+}

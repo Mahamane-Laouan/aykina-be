@@ -1,0 +1,511 @@
+@extends('layouts.master')
+
+@section('title')
+    Hold Bookings
+@endsection
+
+@php
+    $userwelcomedata = Auth::guard('admin')->user();
+@endphp
+
+@section('page-title')
+    Welcome, {{ $userwelcomedata->firstname }} {{ $userwelcomedata->lastname }}
+@endsection
+
+
+@section('css')
+    <style>
+        .list-inline-item {
+            margin-right: -0.5rem !important;
+        }
+    </style>
+@endsection
+
+@section('body')
+@endsection
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+@section('content')
+
+    {{-- Heading detail --}}
+    <div class="row align-items-center">
+        <div class="col-md-3" style="padding-top: 18px;">
+            <div class="mb-3">
+                <h5 class="card-title">Hold Bookings <span class="text-muted fw-normal ms-2">({{ $records->total() }})</span>
+                </h5>
+                <p class="text-muted">Service Booking / Hold Bookings</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+        </div>
+
+        <div class="col-md-3">
+        </div>
+
+        {{-- Search Icon --}}
+        <div class="col-md-3" style="padding-top: 18px;">
+            <div class="input-group"
+                style="box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden;">
+                <span class="input-group-text" id="search-icon"
+                    style="background-color: #f9f9f9; color: #6c757d; font-size: 1.25rem; border: none;">
+                    <i class="bx bx-search"></i>
+                </span>
+                <input type="text" id="searchSubCategoryInput" class="form-control"
+                    placeholder="Search by service or provider name" aria-label="Search" aria-describedby="search-icon"
+                    style="border: none; box-shadow: none; outline: none; color: #495057;">
+            </div>
+        </div>
+    </div>
+
+
+    {{-- Category List Table --}}
+    <div class="row" style="padding-top: 20px;">
+
+        @if (session('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
+            </div>
+        @endif
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-nowrap align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="color: #ffff;">Order Id</th>
+                                    <th scope="col" style="color: #ffff;">Service</th>
+                                    <th scope="col" style="min-width: 16rem; color: #ffff;">Booking Date</th>
+                                    <th scope="col" style="min-width: 16rem; color: #ffff;">Customer</th>
+                                    <th scope="col" style="min-width: 16rem; color: #ffff;">Provider</th>
+                                    <th scope="col" style="color: #ffff;">Total Amount</th>
+                                    <th scope="col" style="color: #ffff;">Service Status</th>
+                                    <th scope="col" style="color: #ffff;">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if ($records->isEmpty())
+                                    <td colspan="8" class="text-center">
+                                        <div
+                                            style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;">
+                                            <div
+                                                style="background: linear-gradient(135deg, #246FC1, #1E5A97); padding: 0.8rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+                                                <i class="bx bx-notepad" style="font-size: 2.5rem; color: #fff;"></i>
+                                            </div>
+                                            <p
+                                                style="margin-top: 0.6rem; font-size: 1.1rem; font-weight: 500; color: #444;">
+                                                No Hold Bookings Found</p>
+                                        </div>
+                                    </td>
+                                @else
+                                    @foreach ($records as $user)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('booking-view', $user->id) }}" style="color: #246FC1;">
+                                                    #{{ $user->id }}
+                                                </a>
+                                            </td>
+
+                                            <td>
+                                                @if ($user->cartItems->isNotEmpty() && $user->cartItems->first()->service)
+                                                    <a href="{{ route('service-edit', $user->cartItems->first()->service->id) }}"
+                                                        style="color: #246FC1;">
+                                                        {{ Str::limit($user->cartItems->first()->service->service_name, 20) }}
+                                                    </a>
+                                                @else
+                                                @endif
+                                            </td>
+
+                                            <td>{{ $user->formatted_created_at ?? '' }}</td>
+
+                                            <td>
+                                                <div style="display: flex; align-items: center;">
+                                                    <div>
+                                                        {{-- User Image --}}
+                                                        @if ($user->user && $user->user->profile_pic)
+                                                            <img src="{{ asset('images/user/' . $user->user->profile_pic) }}"
+                                                                class="avatar rounded-circle img-thumbnail me-2">
+                                                        @else
+                                                            {{-- Default User Image --}}
+                                                            <img src="{{ asset('images/user/default_user.jpg') }}"
+                                                                class="avatar rounded-circle img-thumbnail me-2">
+                                                        @endif
+                                                    </div>
+
+                                                    <div style="display: flex; flex-direction: column; width: fit-content;">
+                                                        {{-- User Full Name with Review --}}
+                                                        @if ($user->user)
+                                                            <div class="text-body"
+                                                                style="display: flex; align-items: center;">
+                                                                <a href="{{ route('user-view', $user->user_id) }}"
+                                                                    style="color: #246FC1;">
+                                                                    {{ $user->user->firstname }}
+                                                                    {{ Str::limit($user->user->lastname ?? '', 20) }}
+                                                                </a>
+
+                                                                {{-- Review beside name --}}
+                                                                <span class="ms-1 d-flex align-items-center"
+                                                                    style="color: #000000;">
+                                                                    <i class="bx bxs-star font-size-14 text-warning"></i>
+                                                                    <span class="font-size-14">
+                                                                        {{ $user->user->avg_users_review ?? '0' }}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+
+                                                            <small class="text-muted">
+                                                                {{ Str::limit($user->user->email ?? '', 30) }}
+                                                            </small>
+                                                        @else
+                                                            <div class="text-body"></div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div style="display: flex; align-items: center;">
+                                                    <div>
+                                                        {{-- Provider Image from cart_items --}}
+                                                        @if (
+                                                            $user->cartItems &&
+                                                                $user->cartItems->first() &&
+                                                                $user->cartItems->first()->provider &&
+                                                                $user->cartItems->first()->provider->profile_pic)
+                                                            <img src="{{ asset('images/user/' . $user->cartItems->first()->provider->profile_pic) }}"
+                                                                class="avatar rounded-circle img-thumbnail me-2">
+                                                        @else
+                                                            {{-- Default User Image --}}
+                                                            <img src="{{ asset('images/user/default_provider.jpg') }}"
+                                                                class="avatar rounded-circle img-thumbnail me-2">
+                                                        @endif
+                                                    </div>
+
+                                                    <div style="display: flex; flex-direction: column; width: fit-content;">
+                                                        {{-- Provider Full Name from cart_items --}}
+                                                        @if ($user->cartItems && $user->cartItems->first() && $user->cartItems->first()->provider)
+                                                            <div class="text-body d-flex align-items-center">
+                                                                <a href="{{ route('provider-view', $user->cartItems->first()->provider->id) }}"
+                                                                    style="color: #246FC1;">
+                                                                    {{ $user->cartItems->first()->provider->firstname }}
+                                                                    {{ $user->cartItems->first()->provider->lastname }}
+                                                                </a>
+
+                                                                {{-- Review beside name with black color --}}
+                                                                <span class="ms-1 d-flex align-items-center"
+                                                                    style="color: #000000;">
+                                                                    <i class="bx bxs-star font-size-14 text-warning"></i>
+                                                                    <span class="font-size-14">
+                                                                        {{ $user->cartItems->first()?->provider?->avg_provider_review ?? '0' }}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                            <small class="text-muted">
+                                                                {{ $user->cartItems->first()->provider->email ?? '' }}
+                                                            </small>
+                                                        @else
+                                                            <div class="text-body">No Provider Assigned</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>{{ $user->total > 0 ? $defaultCurrency . $user->total : $defaultCurrency . '0' }}
+                                            </td>
+
+                                            <td>
+                                                <span class="badge"
+                                                    style="background-color: #FF6F00; color: white; font-size: 14px; height: 30px; padding-top: 8px;">Hold</span>
+                                            </td>
+
+
+                                            <td>
+                                                <ul class="list-inline mb-0">
+                                                    <li class="list-inline-item">
+                                                        <a href="{{ route('booking-view', $user->id) }}"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top" title="View"
+                                                            class="px-2 text-primary"><i
+                                                                class="bx bx-show font-size-18"></i></a>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {{-- Pagination --}}
+    <div class="row">
+        <div class="col-md-12" style="padding-top: 17px;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="entries-info">
+                    Showing {{ $records->firstItem() }} to {{ $records->lastItem() }} of
+                    {{ $records->total() }} entries
+                </div>
+                <div class="pagination-container">
+                    @if ($records->hasPages())
+                        <nav>
+                            <ul class="pagination">
+                                {{-- Previous Page Link --}}
+                                @if ($records->onFirstPage())
+                                    <li class="page-item disabled" aria-disabled="true">
+                                        <span class="page-link">&laquo;</span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $records->previousPageUrl() }}"
+                                            rel="prev">&laquo;</a>
+                                    </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @foreach (range(1, $records->lastPage()) as $page)
+                                    @if ($page == 1 || $page == $records->lastPage() || abs($page - $records->currentPage()) <= 2)
+                                        @if ($page == $records->currentPage())
+                                            <li class="page-item active" aria-current="page">
+                                                <span class="page-link">{{ $page }}</span>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                    href="{{ $records->url($page) }}">{{ $page }}</a>
+                                            </li>
+                                        @endif
+                                    @elseif ($page == 2 || $page == $records->lastPage() - 1)
+                                        {{-- Skip showing ellipsis for the second page and second last page --}}
+                                        <li class="page-item disabled" aria-disabled="true">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($records->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $records->nextPageUrl() }}"
+                                            rel="next">&raquo;</a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled" aria-disabled="true">
+                                        <span class="page-link">&raquo;</span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+
+@section('scripts')
+    <script src="{{ URL::asset('build/js/app.js') }}"></script>
+@endsection
+
+
+{{-- deleteServiceBooking --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    var baseUrl = "{{ url('/') }}/";
+
+    function deleteServiceBooking(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert booking!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Delete Booking!',
+            customClass: {
+                confirmButton: 'btn btn-primary me-2',
+                cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                    url: baseUrl + 'servicebooking-delete/' + id,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: 'Booking has been removed.',
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            }
+                        }).then(function() {
+                            location.reload(); // Refresh the page
+                        });
+                    }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire({
+                    title: 'Hold',
+                    text: 'Hold Delete :)',
+                    icon: 'error',
+                    customClass: {
+                        confirmButton: 'btn btn-success'
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+<script>
+    // Pass the default currency to JavaScript
+    const defaultCurrency = "{{ $defaultCurrency }}"; // Fetch this from the controller
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchSubCategoryInput');
+        const categoryTable = document.querySelector('tbody');
+        const pagination = document.querySelector('.pagination-container');
+        const entriesInfo = document.querySelector('.entries-info');
+
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const query = this.value.trim();
+
+                // Hide pagination and entries info when search is active
+                if (pagination) pagination.style.display = query ? 'none' : 'block';
+                if (entriesInfo) entriesInfo.style.display = query ? 'none' : 'block';
+
+                fetch(`{{ route('hold-bookinglist') }}?search=${query}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        categoryTable.innerHTML = ''; // Clear the table
+
+                        if (data.records.length > 0) {
+                            data.records.forEach(record => {
+                                const userProfile = record.user.profile_pic ?
+                                    `<img src="${record.user.profile_pic}" alt="User  Image" class="avatar rounded-circle img-thumbnail" style="min-width: 50px; height: 50px; object-fit: cover;">` :
+                                    `<img src="images/user/default_user.jpg" class="avatar rounded-circle img-thumbnail me-2">`;
+
+                                const providerProfile = record.provider.profile_pic ?
+                                    `<img src="${record.provider.profile_pic}" alt="Provider Image" class="avatar rounded-circle img-thumbnail" style="min-width: 50px; height: 50px; object-fit: cover;">` :
+                                   `<img src="images/user/default_provider.jpg" class="avatar rounded-circle img-thumbnail me-2">`;
+
+                                     function truncateText(text, maxLength) {
+                                    if (!text) return '';
+                                    return text.length > maxLength ? text.substring(0,
+                                        maxLength) + '...' : text;
+                                }
+
+                                categoryTable.innerHTML += `
+                                <tr>
+                                    <td>
+                                        <a href="${record.edit_url}" style="color: #246FC1;">
+                                            #${record.id}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="${record.service_url}" style="color: #246FC1;">
+                                            ${record.service_name.length > 20 ? record.service_name.substring(0, 20) + '...' : record.service_name}
+                                        </a>
+                                    </td>
+                                    <td>${record.created_at}</td>
+                                     <td>
+    <div style="display: flex; align-items: center;">
+        <div>${userProfile}</div>
+        <div style="display: flex; flex-direction: column; width: fit-content;">
+            <div class="text-body" style="display: flex; align-items: center;">
+                <a href="${record.user.profile_url}" style="color: #246FC1;">
+                    ${record.user.firstname} ${record.user.lastname}
+                </a>
+
+                <!-- Review beside name -->
+                <span style="display: flex; align-items: center; margin-left: 4px; color: #000000;">
+                    <i class="bx bxs-star font-size-14 text-warning"></i>
+                    <span class="font-size-14">
+                        ${record.user.avg_users_review ?? '0'}
+                    </span>
+                </span>
+            </div>
+            <small class="text-muted">${truncateText(record.user.email ?? '', 30)}</small>
+        </div>
+    </div>
+</td>
+                                    <td>
+    <div style="display: flex; align-items: center;">
+        <div>${providerProfile}</div>
+        <div style="margin-left: 8px;">
+            ${record.provider.firstname && record.provider.lastname ? 
+                `<div class="text-body" style="display: flex; align-items: center;">
+                    <a href="${record.provider.profile_url}" style="color: #246FC1; margin-right: 5px;">
+                        ${record.provider.firstname} ${record.provider.lastname}
+                    </a>
+                    <span style="display: flex; align-items: center; color: #000000;">
+                        <i class="bx bxs-star font-size-14 text-warning"></i>
+                        <span class="font-size-14" style="margin-left: 2px;">
+                            ${record.provider.avg_provider_review ?? '0'}
+                        </span>
+                    </span>
+                </div>
+                <small class="text-muted">${record.provider.email}</small>`
+                :
+                `<div class="text-body">No Provider Assigned</div>`
+            }
+        </div>
+    </div>
+</td>
+                                    <td>${record.total > 0 ? `${defaultCurrency}${record.total}` : `${defaultCurrency}0`}</td>
+                                   <td>
+                                                <span class="badge"
+                                                    style="background-color: #FF6F00; color: white; font-size: 14px; height: 30px; padding-top: 8px;">Hold</span>
+                                            </td>
+                                    <td>
+                                        <ul class="list-inline mb-0">
+                                            <li class="list-inline-item">
+                                                <a href="${record.edit_url}" class="px-2 text-primary" data-bs-toggle="tooltip" title="View"><i class="bx bx-show font-size-18"></i></a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>`;
+                            });
+                        } else {
+                            categoryTable.innerHTML = `
+                            <td colspan="8" class="text-center">
+                                        <div
+                                            style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;">
+                                            <div
+                                                style="background: linear-gradient(135deg, #246FC1, #1E5A97); padding: 0.8rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+                                                <i class="bx bx-notepad" style="font-size: 2.5rem; color: #fff;"></i>
+                                            </div>
+                                            <p
+                                                style="margin-top: 0.6rem; font-size: 1.1rem; font-weight: 500; color: #444;">
+                                                No Hold Bookings Found</p>
+                                        </div>
+                                    </td>`;
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        }
+    });
+</script>

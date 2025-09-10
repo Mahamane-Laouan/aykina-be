@@ -29,3 +29,5 @@ ENV APP_DEBUG=false
 ENV WEBROOT=/var/www/html/public
 ENV RUN_SCRIPTS=1
 ENV REAL_IP_HEADER=1
+# Exécuter le script de build après l'installation
+RUN chmod +x /var/www/html/render-build.sh && /var/www/html/render-build.sh

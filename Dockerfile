@@ -21,7 +21,12 @@ FROM richarvey/nginx-php-fpm:latest
 
 WORKDIR /var/www/html
 
+# Copier l'application depuis le build
 COPY --from=build /app ./
+
+# Copier le script de build
+COPY render-build.sh /var/www/html/
+RUN chmod +x /var/www/html/render-build.sh
 
 # Variables d'environnement Laravel
 ENV APP_ENV=production
@@ -29,5 +34,6 @@ ENV APP_DEBUG=false
 ENV WEBROOT=/var/www/html/public
 ENV RUN_SCRIPTS=1
 ENV REAL_IP_HEADER=1
-# Exécuter le script de build après l'installation
-RUN chmod +x /var/www/html/render-build.sh && /var/www/html/render-build.sh
+
+# Commande de démarrage : exécuter render-build.sh puis lancer php-fpm
+CMD ["/bin/bash", "-c", "/var/www/html/render-build.sh && /start.sh"]

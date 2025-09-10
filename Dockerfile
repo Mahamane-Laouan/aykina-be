@@ -10,8 +10,8 @@ COPY bootstrap/ bootstrap/
 COPY config/ config/
 COPY database/ database/
 
-# Installer les dépendances
-RUN composer install --no-dev --optimize-autoloader
+# Installer les dépendances sans scripts artisan
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Copier le reste du projet
 COPY . .

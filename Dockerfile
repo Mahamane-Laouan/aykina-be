@@ -3,14 +3,15 @@ FROM composer:2 AS build
 
 WORKDIR /app
 
-# Copier les fichiers nécessaires pour Composer
+# Copier uniquement ce dont Composer a besoin
 COPY composer.json composer.lock ./
-COPY artisan .  
-COPY database/ database/
+COPY artisan ./
+COPY bootstrap/ bootstrap/
 COPY config/ config/
+COPY database/ database/
 
 # Installer les dépendances
-RUN composer install 
+RUN composer install --no-dev --optimize-autoloader
 
 # Copier le reste du projet
 COPY . .

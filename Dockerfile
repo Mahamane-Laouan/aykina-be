@@ -10,7 +10,7 @@ COPY database/ database/
 COPY config/ config/
 
 # Installer les dépendances
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install 
 
 # Copier le reste du projet
 COPY . .

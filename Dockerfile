@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copier les fichiers nécessaires pour Composer
 COPY composer.json composer.lock ./
-COPY artisan .   # <--- On copie artisan avant composer install pour éviter l'erreur
+COPY artisan .  
 COPY database/ database/
 COPY config/ config/
 
